@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ouvidoria · Frida & Mina</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #5c5c5c;
+      --accent: #111111;
+      --line: #dcdcdc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+    header { margin-bottom: 28px; }
+    .logo {
+      display: block;
+      width: 220px;
+      max-width: 60%;
+      height: auto;
+      margin: 0 0 24px;
+    }
+    h1 { font-size: 32px; margin: 0 0 12px; font-weight: normal; }
+    p { margin: 0 0 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+    }
+    .card h2 { font-size: 17px; margin: 0 0 8px; }
+    .card ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .card li { margin-bottom: 6px; }
+    .form-wrap {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 900px;
+      border: 0;
+      display: block;
+    }
+    footer { margin-top: 24px; font-size: 14px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img class="logo" src="logo.png" alt="Frida &amp; Mina">
+      <h1>Canal de ouvidoria</h1>
+      <p>Um espaço para você nos contar o que precisa ser dito: uma sugestão, uma crítica, um problema com alguém ou com o ambiente de trabalho, ou algo que você acha que podemos fazer melhor. Queremos ouvir.</p>
+    </header>
+
+    <section class="card">
+      <h2>Como funciona</h2>
+      <ul>
+        <li>Você pode se identificar ou enviar a mensagem de forma <strong>totalmente anônima</strong>. O campo de nome é opcional.</li>
+        <li>O formulário não pede nem registra e-mail, e não exige login.</li>
+        <li>As mensagens são lidas apenas por Fernanda. [AJUSTAR: confirme quem lê]</li>
+        <li>Se quiser uma resposta, deixe um contato no campo indicado. Sem isso, não conseguimos responder diretamente.</li>
+        <li>Se você quer permanecer anônimo, evite detalhes que possam identificá-lo, como dia, turno ou situações que só você presenciou.</li>
+        <li>Nenhuma pessoa será penalizada por usar este canal.</li>
+      </ul>
+    </section>
+
+    <section class="form-wrap">
+      <!--
+        COLE AQUI o código de incorporação do Google Forms
+        (Enviar > ícone <> > copiar HTML) e apague o iframe de exemplo abaixo.
+        Mantenha width="100%" e ajuste height se necessário.
+      -->
+      <iframe
+        src="COLE_AQUI_A_URL_DO_FORMULARIO?embedded=true"
+        title="Formulário de ouvidoria"
+        loading="lazy">
+        Carregando…
+      </iframe>
+    </section>
+
+    <footer>
+      Em caso de situação urgente ou que envolva risco à sua segurança, fale diretamente com a gestão.
+    </footer>
+  </main>
+</body>
+</html>
