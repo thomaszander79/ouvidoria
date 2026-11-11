@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light">
   <title>Ouvidoria · Frida & Mina</title>
   <style>
     :root {
       --bg: #ffffff;
-      --card: #ffffff;
       --text: #111111;
       --muted: #5c5c5c;
-      --accent: #111111;
-      --line: #dcdcdc;
+      --line: #cfcfcf;
+      --line-soft: #e6e6e6;
+      --focus: #111111;
+      --error: #b3261e;
     }
     * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
       background: var(--bg);
@@ -23,82 +27,300 @@
       line-height: 1.6;
     }
     main {
-      max-width: 720px;
+      max-width: 680px;
       margin: 0 auto;
-      padding: 40px 20px 64px;
+      padding: 32px 20px 64px;
     }
-    header { margin-bottom: 28px; }
     .logo {
       display: block;
-      width: 220px;
-      max-width: 60%;
+      width: 180px;
+      max-width: 55%;
       height: auto;
-      margin: 0 0 24px;
+      margin: 0 0 28px;
     }
-    h1 { font-size: 32px; margin: 0 0 12px; font-weight: normal; }
+    h1 { font-size: 32px; line-height: 1.2; margin: 0 0 14px; font-weight: normal; }
     p { margin: 0 0 14px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
+    .intro { font-size: 18px; }
+
+    .como {
+      border: 1px solid var(--line-soft);
       border-radius: 12px;
-      padding: 20px 22px;
-      margin-bottom: 24px;
+      padding: 18px 20px;
+      margin: 28px 0;
     }
-    .card h2 { font-size: 17px; margin: 0 0 8px; }
-    .card ul { margin: 0; padding-left: 20px; color: var(--muted); }
-    .card li { margin-bottom: 6px; }
-    .form-wrap {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    iframe {
-      width: 100%;
-      height: 900px;
-      border: 0;
+    .como h2 { font-size: 17px; margin: 0 0 8px; }
+    .como ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .como li { margin-bottom: 6px; }
+    .como li:last-child { margin-bottom: 0; }
+
+    form { margin: 0; }
+    .campo { margin-bottom: 22px; }
+    label, .rotulo {
       display: block;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 6px;
     }
-    footer { margin-top: 24px; font-size: 14px; color: var(--muted); }
+    .opcional { font-weight: normal; color: var(--muted); }
+    .dica { display: block; font-size: 14px; color: var(--muted); margin: -2px 0 8px; }
+    input[type="text"], select, textarea {
+      width: 100%;
+      font: inherit;
+      font-size: 16px; /* 16px evita o zoom automático no iPhone */
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 13px 14px;
+      min-height: 48px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    select {
+      padding-right: 40px;
+      background-image: linear-gradient(45deg, transparent 50%, #111 50%), linear-gradient(135deg, #111 50%, transparent 50%);
+      background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+    textarea { min-height: 180px; resize: vertical; line-height: 1.5; }
+    input:focus, select:focus, textarea:focus, button:focus-visible {
+      outline: 3px solid rgba(17, 17, 17, .25);
+      outline-offset: 1px;
+      border-color: var(--focus);
+    }
+    .contador { font-size: 13px; color: var(--muted); text-align: right; margin-top: 4px; }
+    .invalido { border-color: var(--error) !important; }
+    .msg-erro { color: var(--error); font-size: 14px; margin: 6px 0 0; display: none; }
+    .msg-erro.ativo { display: block; }
+
+    /* campo-isca contra robôs: invisível para pessoas */
+    .isca { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    button {
+      font: inherit;
+      font-size: 17px;
+      font-weight: bold;
+      color: #fff;
+      background: #111;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 28px;
+      min-height: 52px;
+      width: 100%;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .55; cursor: default; }
+    @media (min-width: 560px) { button { width: auto; min-width: 220px; } }
+
+    .status { margin-top: 16px; font-size: 15px; min-height: 1.5em; }
+    .status.erro { color: var(--error); }
+
+    .sucesso {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px 22px;
+      display: none;
+    }
+    .sucesso.ativo { display: block; }
+    .sucesso h2 { font-size: 24px; font-weight: normal; margin: 0 0 10px; }
+    .protocolo {
+      display: inline-block;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 20px;
+      letter-spacing: .04em;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin: 6px 0 14px;
+      word-break: break-all;
+    }
+    .sucesso button { background: #fff; color: #111; border: 1px solid #111; }
+
+    footer { margin-top: 36px; font-size: 14px; color: var(--muted); }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 28px; }
+      .intro { font-size: 17px; }
+      main { padding: 24px 16px 56px; }
+    }
   </style>
 </head>
 <body>
   <main>
-    <header>
-      <img class="logo" src="logo.png" alt="Frida &amp; Mina">
-      <h1>Canal de ouvidoria</h1>
-      <p>Um espaço para você nos contar o que precisa ser dito: uma sugestão, uma crítica, um problema com alguém ou com o ambiente de trabalho, ou algo que você acha que podemos fazer melhor. Queremos ouvir.</p>
-    </header>
+    <img class="logo" src="logo.png" alt="Frida &amp; Mina">
+    <h1>Canal de ouvidoria</h1>
+    <p class="intro">Um espaço para você nos contar o que precisa ser dito: uma sugestão, uma crítica, um problema com alguém ou com o ambiente de trabalho, ou algo que podemos fazer melhor. Queremos ouvir.</p>
 
-    <section class="card">
-      <h2>Como funciona</h2>
+    <section class="como" aria-labelledby="como-titulo">
+      <h2 id="como-titulo">Como funciona</h2>
       <ul>
-        <li>Você pode se identificar ou enviar a mensagem de forma <strong>totalmente anônima</strong>. O campo de nome é opcional.</li>
-        <li>O formulário não pede nem registra e-mail, e não exige login.</li>
-        <li>As mensagens são lidas apenas por Fernanda. [AJUSTAR: confirme quem lê]</li>
-        <li>Se quiser uma resposta, deixe um contato no campo indicado. Sem isso, não conseguimos responder diretamente.</li>
-        <li>Se você quer permanecer anônimo, evite detalhes que possam identificá-lo, como dia, turno ou situações que só você presenciou.</li>
-        <li>Nenhuma pessoa será penalizada por usar este canal.</li>
+        <li>Você pode se identificar ou enviar de forma <strong>totalmente anônima</strong>. O nome é opcional.</li>
+        <li>Não pedimos e-mail nem login, e o sistema não grava seu IP nem dados do seu aparelho junto com a mensagem.</li>
+        <li>As mensagens são lidas apenas por Fernanda.</li>
+        <li>Se quiser resposta, deixe um contato no campo indicado. Sem ele, não conseguimos responder.</li>
+        <li>Para manter o anonimato, evite detalhes que identifiquem você, como dia, turno ou situações que só você presenciou.</li>
+        <li>Ninguém será penalizado por usar este canal.</li>
       </ul>
     </section>
 
-    <section class="form-wrap">
-      <!--
-        COLE AQUI o código de incorporação do Google Forms
-        (Enviar > ícone <> > copiar HTML) e apague o iframe de exemplo abaixo.
-        Mantenha width="100%" e ajuste height se necessário.
-      -->
-      <iframe
-        src="COLE_AQUI_A_URL_DO_FORMULARIO?embedded=true"
-        title="Formulário de ouvidoria"
-        loading="lazy">
-        Carregando…
-      </iframe>
+    <form id="form" novalidate>
+      <div class="campo">
+        <label for="tipo">Sobre o que é a sua mensagem?</label>
+        <select id="tipo" name="tipo" required aria-describedby="erro-tipo">
+          <option value="">Escolha uma opção</option>
+          <option>Assédio moral</option>
+          <option>Assédio sexual</option>
+          <option>Discriminação</option>
+          <option>Sobrecarga ou jornada de trabalho</option>
+          <option>Condições de trabalho ou segurança</option>
+          <option>Sugestão</option>
+          <option>Elogio</option>
+          <option>Outro</option>
+        </select>
+        <p class="msg-erro" id="erro-tipo">Escolha o assunto da mensagem.</p>
+      </div>
+
+      <div class="campo">
+        <label for="mensagem">Sua mensagem</label>
+        <textarea id="mensagem" name="mensagem" required maxlength="5000" aria-describedby="erro-mensagem contador"></textarea>
+        <div class="contador" id="contador" aria-hidden="true">0 / 5000</div>
+        <p class="msg-erro" id="erro-mensagem">Escreva a sua mensagem.</p>
+      </div>
+
+      <div class="campo">
+        <label for="nome">Seu nome <span class="opcional">(opcional)</span></label>
+        <span class="dica">Deixe em branco para enviar de forma anônima.</span>
+        <input type="text" id="nome" name="nome" maxlength="120" autocomplete="off">
+      </div>
+
+      <div class="campo">
+        <label for="contato">Contato para retorno <span class="opcional">(opcional)</span></label>
+        <span class="dica">Telefone ou e-mail, só se quiser receber uma resposta.</span>
+        <input type="text" id="contato" name="contato" maxlength="160" autocomplete="off">
+      </div>
+
+      <div class="isca" aria-hidden="true">
+        <label for="website">Não preencha este campo</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" id="enviar">Enviar mensagem</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </form>
+
+    <section class="sucesso" id="sucesso" tabindex="-1" aria-live="polite">
+      <h2>Mensagem enviada</h2>
+      <p>Obrigado por nos contar. Ela chegou até Fernanda.</p>
+      <div id="bloco-protocolo">
+        <p>Se quiser acompanhar ou se referir a ela depois, guarde este código. Ele não identifica você:</p>
+        <div class="protocolo" id="protocolo"></div>
+      </div>
+      <button type="button" id="outra">Enviar outra mensagem</button>
     </section>
 
     <footer>
       Em caso de situação urgente ou que envolva risco à sua segurança, fale diretamente com a gestão.
     </footer>
   </main>
+
+  <script>
+    // Endereço do Apps Script (termina em /exec). Veja o passo a passo do script.
+    var ENDPOINT = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+    var form = document.getElementById("form");
+    var tipo = document.getElementById("tipo");
+    var mensagem = document.getElementById("mensagem");
+    var contador = document.getElementById("contador");
+    var botao = document.getElementById("enviar");
+    var areaStatus = document.getElementById("status");
+    var sucesso = document.getElementById("sucesso");
+    var carregadoEm = Date.now();
+
+    mensagem.addEventListener("input", function () {
+      contador.textContent = mensagem.value.length + " / 5000";
+      marcar(mensagem, "erro-mensagem", false);
+    });
+    tipo.addEventListener("change", function () { marcar(tipo, "erro-tipo", false); });
+
+    function marcar(campo, idErro, ativo) {
+      campo.classList.toggle("invalido", ativo);
+      document.getElementById(idErro).classList.toggle("ativo", ativo);
+      campo.setAttribute("aria-invalid", ativo ? "true" : "false");
+    }
+
+    function mostrarStatus(texto, erro) {
+      areaStatus.textContent = texto;
+      areaStatus.className = "status" + (erro ? " erro" : "");
+    }
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      mostrarStatus("", false);
+
+      var okTipo = tipo.value !== "";
+      var okMsg = mensagem.value.trim().length >= 5;
+      marcar(tipo, "erro-tipo", !okTipo);
+      marcar(mensagem, "erro-mensagem", !okMsg);
+      if (!okTipo) { tipo.focus(); return; }
+      if (!okMsg) { mensagem.focus(); return; }
+
+      if (ENDPOINT.indexOf("COLE_AQUI") === 0) {
+        mostrarStatus("O canal ainda não foi ativado. Tente novamente mais tarde.", true);
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = "Enviando…";
+
+      var dados = {
+        tipo: tipo.value,
+        mensagem: mensagem.value.trim(),
+        nome: document.getElementById("nome").value.trim(),
+        contato: document.getElementById("contato").value.trim(),
+        website: document.getElementById("website").value,
+        t: Date.now() - carregadoEm
+      };
+
+      // text/plain evita a verificação prévia (preflight) do navegador
+      fetch(ENDPOINT, { method: "POST", body: JSON.stringify(dados) })
+        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (r && r.ok) { concluir(r.protocolo); return; }
+          var erro = r && r.erro;
+          if (erro === "limite") throw new Error("Recebemos muitas mensagens agora. Tente de novo mais tarde.");
+          if (erro === "mensagem") throw new Error("Escreva um pouco mais na sua mensagem.");
+          throw new Error("Não foi possível enviar. Tente novamente.");
+        })
+        .catch(function (e) {
+          var texto = e && e.message && e.message.indexOf("Failed to fetch") === -1 && e.message.indexOf("Load failed") === -1
+            ? e.message
+            : "Não foi possível enviar. Confira sua conexão e tente novamente. Sua mensagem continua aqui.";
+          mostrarStatus(texto, true);
+          botao.disabled = false;
+          botao.textContent = "Enviar mensagem";
+        });
+    });
+
+    function concluir(protocolo) {
+      form.style.display = "none";
+      document.getElementById("bloco-protocolo").style.display = protocolo ? "block" : "none";
+      document.getElementById("protocolo").textContent = protocolo || "";
+      sucesso.classList.add("ativo");
+      sucesso.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("outra").addEventListener("click", function () {
+      form.reset();
+      contador.textContent = "0 / 5000";
+      sucesso.classList.remove("ativo");
+      form.style.display = "";
+      botao.disabled = false;
+      botao.textContent = "Enviar mensagem";
+      carregadoEm = Date.now();
+      mostrarStatus("", false);
+    });
+  </script>
 </body>
 </html>
